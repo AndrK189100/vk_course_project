@@ -52,9 +52,11 @@ class GetUsers:
                 photos = photos['items']
 
             for photo in photos:
-                photo['sizes'].sort(key=lambda x: x['height'] * x['width'], reverse=True)
-                user['photos'].append(photo['sizes'][0]['url'])
+                #photo['sizes'].sort(key=lambda x: x['height'] * x['width'], reverse=True)
+                user['photos'].append(f'photo{photo["owner_id"]}_{photo["id"]}')
+
         return {'result': 1}
+
 
     def get_users(self, *args):
         result = self.__get_dirty_users(args[0])
@@ -65,3 +67,8 @@ class GetUsers:
         if result['result'] != 1:
             return result
         return self.__buffer
+
+    def clear_buffer(self):
+        self.__buffer.clear()
+
+

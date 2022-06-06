@@ -103,4 +103,19 @@ class DialogMsg:
                f'Пол: {sex.get(args[1])}\n' \
                f'Возраст от {args[2]} до {args[3]}'
 
+    def one_moment(*args):
+        return 'минуту'
 
+    def list_unstruction(*args):
+        return 'Кнопки со стрелками позволяют двигаться по найденым объектам вперед и назад\n' \
+               'Конопка "*" добавляет объект в список избранных'
+
+    def searh_output(*args):
+        return f'{args[0]} {args[1]}\n' \
+               f'Страница: {args[2]}'
+
+    def end_of_list(*args):
+        return 'Список в самом начале, больше назад двигаться нельзя...'
+
+    def dummy(*args):
+        return 'тут пока ничего нет)'

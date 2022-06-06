@@ -15,7 +15,6 @@ from search_options import search_options
 class Dialog:
 
     def __init__(self, vk_bot: object):
-        self.get_users = None
         self.user_token = None
         self.vk_user = None
         self.sex = None
@@ -25,6 +24,7 @@ class Dialog:
         self.age_from = None
         self.first_name = None
         self.user_id = None
+        self.position = 0
         self.bot_brain = FSM(self.begin)
         self.vk_bot_api = vk_bot.get_api()
         keyboard = VkKeyboard()
@@ -51,11 +51,12 @@ class Dialog:
                          f'redirect_uri={vk_bot.server_url}&' \
                          f'code='
 
-    def send_message(self, msg: str, keyboard=None):
+    def send_message(self, msg: str, keyboard=None, attachment=None):
         self.vk_bot_api.messages.send(user_id=self.user_id,
                                       message=msg,
                                       random_id=self.get_random_id(),
-                                      keyboard=keyboard)
+                                      keyboard=keyboard,
+                                      attachment=attachment)
 
     def send_answer(self, event_id, peer_id, event_data=None):
         self.vk_bot_api.messages.sendMessageEventAnswer(event_id=event_id,
@@ -137,14 +138,16 @@ class Dialog:
         if event.obj['payload']['text'] == 'proceed':
             resp = get(f'http://localhost:8000/user_code?user_id={self.user_id}').json()
             if not resp:
-                self.cancel(msg.authorize_wrong())
+                self.cancel(msg.authorize_wrong(), self.start_button)
+                return
             resp = get(self.token_url + resp)
             if resp.status_code != 200:
-                self.cancel(msg.authorize_wrong())
+                self.cancel(msg.authorize_wrong(), self.start_button)
+                return
             user_token = resp.json()['access_token']
             self.vk_user = VkApi(token=user_token)
             self.user_token = user_token
-            self.get_users = GetUsers(self.vk_user)
+            self.found_users = GetUsers(self.vk_user)
             self.send_message(msg.authorize())
             self.bot_brain.set_state(self.start)
             self.bot_brain.update(event)
@@ -298,14 +301,60 @@ class Dialog:
             return
         self.send_answer(event.obj['event_id'], event.obj['peer_id'])
         if event.obj['payload']['text'] == 'proceed':
-            self.result_buffer += self.get_users.get_users(search_options)
             keyboard = VkKeyboard()
             keyboard.add_callback_button('<<', VkKeyboardColor.PRIMARY, {'text': '<<'})
             keyboard.add_callback_button('*', VkKeyboardColor.PRIMARY, {'text': '*'})
             keyboard.add_callback_button('>>', VkKeyboardColor.PRIMARY, {'text': '>>'})
             keyboard.add_line()
             keyboard.add_callback_button('Отмена', VkKeyboardColor.NEGATIVE, {'text': 'cancel'})
-            self.me
+
+            self.send_message(msg.one_moment())
+
+            self.result_buffer += self.found_users.get_users(search_options)
+            self.found_users.clear_buffer()
+            self.bot_brain.set_state(self.viewer)
+            self.bot_brain.update(event)
+            self.send_message(msg.list_unstruction(), keyboard.get_keyboard())
+            self.send_message(msg.searh_output(self.result_buffer[self.position]['first_name'],
+                                               self.result_buffer[self.position]['last_name'],
+                                               self.result_buffer[self.position]['profile']),
+                              attachment=','.join(self.result_buffer[self.position]['photos']))
         elif event.obj['payload']['text'] == 'cancel':
             self.cancel(msg.cancel(), self.start_button)
 
+    def viewer(self, event):
+        if event.type != VkBotEventType.MESSAGE_EVENT:
+            return
+        if event.obj['payload']['text'] == '>>':
+            self.send_answer(event.obj['event_id'], event.obj['peer_id'])
+            self.position += 1
+            if self.position == len(self.result_buffer):
+                search_options['offset'] += 10
+                self.result_buffer += self.found_users.get_users(search_options)
+                self.found_users.clear_buffer()
+
+            self.send_message(msg.searh_output(self.result_buffer[self.position]['first_name'],
+                                               self.result_buffer[self.position]['last_name'],
+                                               self.result_buffer[self.position]['profile']),
+                              attachment=','.join(self.result_buffer[self.position]['photos']))
+
+        elif event.obj['payload']['text'] == '<<':
+            self.send_answer(event.obj['event_id'], event.obj['peer_id'])
+            if self.position == 0:
+                self.send_message(msg.end_of_list())
+                return
+            self.position -= 1
+            self.send_message(msg.searh_output(self.result_buffer[self.position]['first_name'],
+                                               self.result_buffer[self.position]['last_name'],
+                                               self.result_buffer[self.position]['profile']),
+                              attachment=','.join(self.result_buffer[self.position]['photos']))
+
+            pass
+        elif event.obj['payload']['text'] == '*':
+            self.send_answer(event.obj['event_id'], event.obj['peer_id'])
+            self.send_message(msg.dummy())
+            return
+
+        elif event.obj['payload']['text'] == 'cancel':
+            self.send_answer(event.obj['event_id'], event.obj['peer_id'])
+            self.cancel(msg.cancel(), self.start_button)
