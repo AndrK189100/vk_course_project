@@ -1,21 +1,21 @@
-import vk_api
+from vk_api import VkApi, ApiError
 import datetime
 
 
-class VkUsers:
-    def __init__(self, token: str, api_version='5.131'):
+class GetUsers:
+    def __init__(self, vk_user: VkApi):
         self.__buffer = []
-        self.__vk_session = vk_api.VkApi(token=token, api_version=api_version)
-        self.__vk = self.__vk_session.get_api()
+        self.__vk_user = vk_user
+        self.__vk_api = vk_user.get_api()
 
     def __get_dirty_users(self, args):
         if 'has_photo' not in args or args['has_photo'] == 0:
             return {'result': -4, 'msg': 'argument has photo not found or 0'}
 
         try:
-            items = self.__vk_session.method('users.search', args)['items']
+            items = self.__vk_user.method('users.search', args)['items']
 
-        except vk_api.ApiError as error_msg:
+        except ApiError as error_msg:
             return {'result': -1, 'msg': error_msg}
 
         if not items:
@@ -41,8 +41,8 @@ class VkUsers:
     def __get_photos(self):
         for user in self.__buffer:
             try:
-                photos = self.__vk.photos.get(owner_id=user['id'], album_id='profile', extended=1)
-            except vk_api.ApiError as error_msg:
+                photos = self.__vk_api.photos.get(owner_id=user['id'], album_id='profile', extended=1)
+            except ApiError as error_msg:
                 return {'result': -1, 'msg': error_msg}
 
             photos['items'].sort(key=lambda x: x['likes']['count'], reverse=True)
