@@ -2,13 +2,13 @@ from vk_api.bot_longpoll import VkBotEventType, VkBotLongPoll
 from cp_vk_api import CpVkApi
 from dialog import Dialog
 
-#token = r'токен приложения'
-token = r'461d9b7a538f80f7277daee01d9edb813322802171e11afc912c2aa6c783a54bb5964d1bfa8e34cb9935d'
+token = r'токен приложения'
+
 buffer = {}
 app_id = '8179323'
 group_id = '213571095'
-#client_secret = 'секретный ключ приложения'
-client_secret = 'kobtg4vkGK25qVpGmzUT'
+client_secret = 'секретный ключ приложения'
+
 server_url = 'http://localhost:8000'
 
 if __name__ == '__main__':
