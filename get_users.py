@@ -50,11 +50,15 @@ class GetUsers:
             if photos['count'] > 2:
                 photos = photos['items'][:3]
             else:
-                photos = photos['items']
-
+                #photos = photos['items']
+                continue
             for photo in photos:
                 user['photos'].append(f'photo{photo["owner_id"]}_{photo["id"]}')
 
+        self.__check_count_photos_dirty_users(self.__buffer)
+
+        if not self.__buffer:
+            return {'result': -3, 'msg': 'selection empty'}
         return {'result': 1}
 
     def __check_field_dirty_users(self, items: list, field: str):
@@ -62,6 +66,15 @@ class GetUsers:
             if field not in item:
                 items.remove(item)
                 self.__check_field_dirty_users(items, field)
+
+    def __check_count_photos_dirty_users(self, items: list):
+        for item in items:
+            if len(item['photos']) < 3:
+                items.remove(item)
+                self.__check_count_photos_dirty_users(items)
+
+
+
 
 
 
