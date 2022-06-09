@@ -9,7 +9,6 @@ from get_users import GetUsers
 from search_options import search_options
 from bot_keyboard import BotKeyboard
 from cp_db import CpDb
-import tokens
 
 
 class Dialog:

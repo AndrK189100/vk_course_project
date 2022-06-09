@@ -8,12 +8,13 @@ buffer = {}
 app_id = '8179323'
 group_id = '213571095'
 client_secret = tokens.client_secret
-service_token = tokens.service_key
+service_token = tokens.service_token
 db_name = 'vkcp'
 db_host = 'localhost'
 db_user = tokens.db_user
 db_password = tokens.db_password
 server_url = 'http://vds.bmnet.org:8000'
+
 
 def main():
     vk_bot = CpVkApi(token=token,
@@ -39,8 +40,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-
-
-
-
