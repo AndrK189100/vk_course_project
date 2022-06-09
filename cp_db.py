@@ -1,10 +1,4 @@
 import psycopg2
-import tokens
-
-db_name = 'vkcp'
-db_user = tokens.db_user
-db_password = tokens.db_password
-db_host = 'localhost'
 
 
 class CpDb:
@@ -17,7 +11,7 @@ class CpDb:
         self.conn = None
 
     def get_cursor(self):
-        self.conn = psycopg2.connect(dbname=self.db_name, user=db_user, password=db_password, host=db_host)
+        self.conn = psycopg2.connect(dbname=self.db_name, user=self.db_user, password=self.db_password, host=self.db_host)
         return self.conn.cursor()
 
     def del_cursor(self, cursor):

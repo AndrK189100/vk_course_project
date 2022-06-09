@@ -14,7 +14,7 @@ import tokens
 
 class Dialog:
 
-    def __init__(self, vk_bot: object):
+    def __init__(self, vk_bot: object, db_name: str, db_user: str, db_password: str, db_host: str):
         self.found_users = None
         self.user_token = None
         self.vk_user = None
@@ -31,7 +31,7 @@ class Dialog:
         self.bot_brain = FSM(self.begin)
         self.vk_bot_api = vk_bot.get_api()
         self.vk_service_api = VkApi(token=vk_bot.service_token).get_api()
-        self.db_interaction = CpDb(tokens.db_name, tokens.db_user, tokens.db_password, tokens.db_host)
+        self.db_interaction = CpDb(db_name, db_user, db_password, db_host)
         self.search_options = search_options.copy()
         self.server_url = vk_bot.server_url
 
@@ -281,7 +281,7 @@ class Dialog:
             if not cities:
                 self.send_message(msg.get_city())
                 return
-            if len(cities) > 14:
+            if len(cities) > 20:
                 self.send_message(msg.get_city_2())
                 return
             self.cities = cities

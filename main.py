@@ -9,6 +9,10 @@ app_id = '8179323'
 group_id = '213571095'
 client_secret = tokens.client_secret
 service_token = tokens.service_key
+db_name = 'vkcp'
+db_host = 'localhost'
+db_user = tokens.db_user
+db_password = tokens.db_password
 server_url = 'http://vds.bmnet.org:8000'
 
 def main():
@@ -24,12 +28,12 @@ def main():
     for event in longpoll_bot.listen():
         if event.type == VkBotEventType.MESSAGE_NEW and event.from_user:
             if event.message['from_id'] not in buffer:
-                buffer[event.message['from_id']] = Dialog(vk_bot)
+                buffer[event.message['from_id']] = Dialog(vk_bot, db_name, db_user, db_password, db_host)
             buffer[event.message['from_id']].bot_brain.update(event)
         elif event.type == VkBotEventType.MESSAGE_EVENT and 'user_id' in event.obj:
 
             if event.obj['user_id'] not in buffer:
-                buffer[event.obj['user_id']] = Dialog(vk_bot)
+                buffer[event.obj['user_id']] = Dialog(vk_bot, db_name, db_user, db_password, db_host)
             buffer[event.obj['user_id']].bot_brain.update(event)
 
 
