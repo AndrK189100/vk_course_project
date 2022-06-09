@@ -9,6 +9,9 @@ class DialogMsg:
     def begin(*args):
         return f'Привет {args[0]}. Для Продолжения необходимо авторизоваться\n'
 
+    def authorized_begin(*args):
+        return f'{args[0]}, Я тебя узнал. Просто нажми "Продолжить"'
+
     def wrong_input(*args):
         return 'Неверный ввод, попробуй еще раз.'
 
@@ -26,12 +29,13 @@ class DialogMsg:
         return 'Авторизация не удалась. Пока.'
 
     def cancel_start(*args):
-        return f'Я определил, твое местожительство, как {args[0]}, {args[1]}. ' \
-               f'Будем искать по месту жительства или введешь данные вручную?'
+        return f'Я определил, вероятную область поиска, как {args[0]}, {args[1]}. ' \
+               f'Будем искать здесь или введешь данные вручную?'
 
-    def cancel_start_1(*args):
-        return 'У тебя в контактах не указано место жительства. Необходимо ввести данные вручную...\n\n' \
-               'Нажми продолжить и введи название страны.'
+    def not_city(*args):
+        return 'У тебя в контактах не указано место жительства. Не могу определить область поиска.\n' \
+               'Необходимо ввести данные вручную...\n\n' \
+               'Отправь название страны.'
 
     def select_city_input_method(*args):
         return 'Хорошо, будем искать по месту жительства.\n\n' \
@@ -83,7 +87,7 @@ class DialogMsg:
         return 'Отправь минимальный возраст объекта.'
 
     def get_age_from(*args):
-        return 'Отправь введи максимальный возраст.'
+        return 'Отправь максимальный возраст.'
 
     def get_age_to(*args):
         return 'Теперь отправь пол объекта поиска в виде цифры.\n' \
@@ -104,18 +108,35 @@ class DialogMsg:
                f'Возраст от {args[2]} до {args[3]}'
 
     def one_moment(*args):
-        return 'минуту'
+        return 'Минуту....'
 
     def list_unstruction(*args):
         return 'Кнопки со стрелками позволяют двигаться по найденым объектам вперед и назад\n' \
-               'Конопка "*" добавляет объект в список избранных'
+               'Конопка "В избранное" добавляет объект в список избранных'
 
     def searh_output(*args):
         return f'{args[0]} {args[1]}\n' \
                f'Страница: {args[2]}'
 
-    def end_of_list(*args):
+    def begin_of_list(*args):
         return 'Список в самом начале, больше назад двигаться нельзя...'
 
-    def dummy(*args):
-        return 'тут пока ничего нет)'
+    def added(*args):
+        return 'Добавил.'
+
+    def bot_broken(*args):
+        return 'Я сломался. Работать не могу'
+
+    def not_found_users(*args):
+        return 'Я ничего не нашел. Измени параметры поиска.'
+
+    def end_of_list(*args):
+        return 'Больше ничего нет...'
+
+    def empty(*args):
+        return 'Тут пока ничего нет.'
+
+    def favorite(*args):
+        return 'САМЫЕ-САМЫЕ'
+    def favorite_end(*args):
+        return 'Больше в избранном ничего нет('

@@ -14,6 +14,7 @@ class GetUsers:
 
         try:
             items = self.__vk_user.method('users.search', args)['items']
+            self.__check_field_dirty_users(items, 'last_seen')
 
         except ApiError as error_msg:
             return {'result': -1, 'msg': error_msg}
@@ -52,10 +53,16 @@ class GetUsers:
                 photos = photos['items']
 
             for photo in photos:
-                #photo['sizes'].sort(key=lambda x: x['height'] * x['width'], reverse=True)
                 user['photos'].append(f'photo{photo["owner_id"]}_{photo["id"]}')
 
         return {'result': 1}
+
+    def __check_field_dirty_users(self, items: list, field: str):
+        for item in items:
+            if field not in item:
+                items.remove(item)
+                self.__check_field_dirty_users(items, field)
+
 
 
     def get_users(self, *args):
