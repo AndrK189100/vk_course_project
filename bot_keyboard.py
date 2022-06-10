@@ -1,6 +1,9 @@
 from vk_api.keyboard import VkKeyboard, VkKeyboardButton, VkKeyboardColor
 
 class BotKeyboard:
+    """
+    Класс содержащий различные клавиатуры для диалога с пользователем бота.
+    """
 
     def empty_keyboard(self):
         return VkKeyboard.get_empty_keyboard()
